@@ -20,7 +20,7 @@ var jsonData = null;
 
 //2、绑定数据
 ~function () {
-    var frg = document.createDocumentFragment();//->创建一个文档碎片用来临时的存储我们创建的tr
+    var frg = document.createDocumentFragment();
     for (var i = 0, len = jsonData.length; i < len; i++) {
         var curData = jsonData[i];
         curData["sex"] = curData["sex"] == 0 ? "男" : (curData["sex"] == 1 ? "女" : "未知");
@@ -47,22 +47,23 @@ changeBg();
 
 //4、实现排序
 function sortTab(n) {
-    //在点击当前列的时候,让其他类的flag都回归初始值-1即可
     for (var k = 0; k < oThs.length; k++) {
-        k != n ? oThs[k].flag = -1 : null;
+        k != n ? oThs[k].flag = false : null;
     }
 
-    var _this = this;
-    _this.flag *= -1;
-
     var ary = utils.listToArray(oRows);
-    ary.sort(function (a, b) {
-        var curInn = a.cells[n].innerHTML, nexInn = b.cells[n].innerHTML, curInnNum = parseFloat(curInn), nexInnNum = parseFloat(nexInn);
-        if (isNaN(curInnNum) || isNaN(nexInnNum)) {
-            return (curInn.localeCompare(nexInn)) * _this.flag;
-        }
-        return (curInnNum - nexInnNum) * _this.flag;
-    });
+    if (!this.flag) {
+        ary.sort(function (a, b) {
+            var curInn = a.cells[n].innerHTML, nexInn = b.cells[n].innerHTML, curInnNum = parseFloat(curInn), nexInnNum = parseFloat(nexInn);
+            if (isNaN(curInnNum) || isNaN(nexInnNum)) {
+                return curInn.localeCompare(nexInn);
+            }
+            return curInnNum - nexInnNum;
+        });
+        this.flag = true;//->已经点击过了
+    } else {
+        ary.reverse();
+    }
 
     var frg = document.createDocumentFragment();
     for (var i = 0, len = ary.length; i < len; i++) {
@@ -76,17 +77,12 @@ function sortTab(n) {
 for (var i = 0, len = oThs.length; i < len; i++) {
     var curTh = oThs[i];
     if (curTh.className.indexOf("cursor") > -1) {
-        curTh.flag = -1;
         curTh.index = i;
+        curTh.flag = false;//->代表还没有点击过
         curTh.onclick = function () {
             sortTab.call(this, this.index);
         };
     }
 }
-
-
-
-
-
 
 
